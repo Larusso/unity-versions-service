@@ -1,0 +1,11 @@
+{
+  "name": "Unity versions service",
+  "description": "A simple service to retrieve revision hash information for a unity version string",
+  "repository": "https://github.com/emk/heroku-rust-cargo-hello",
+  "success_url": "/",
+  "keywords": ["rust", "iron"],
+  "website": "http://www.randomhacks.net/2014/09/17/deploying-rust-heroku-iron/",
+  "env": {
+    "BUILDPACK_URL": "https://github.com/emk/heroku-buildpack-rust.git"
+  }
+}
