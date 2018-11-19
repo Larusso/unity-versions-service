@@ -33,12 +33,20 @@ macro_rules! version_result {
 
 include!(concat!(env!("OUT_DIR"), "/version_routes.rs"));
 
+fn index_handler(_r: &mut Request) -> IronResult<Response> {
+    Ok(Response::with((
+        Status::Ok,
+        "ok",
+    )))
+}
+
 pub fn start_server<A>(addr: A) -> HttpResult<Listening>
 where
     A: ToSocketAddrs,
 {
     info!("start server");
     let mut router = Router::new();
+    router.get("/", index_handler, "index");
     add_version_routes(&mut router);
     let iron = Iron::new(Logger::new().around(Box::new(router)));
     iron.http(addr)
