@@ -56,6 +56,6 @@ impl Options for Settings {
 
 fn main() -> std::io::Result<()> {
     let options: Settings = cli_core::get_options(USAGE)?;
-    unity_version_service::start_server(("localhost", options.port())).unwrap();
+    unity_version_service::start_server(("0.0.0.0", options.port())).unwrap();
     Ok(())
 }
