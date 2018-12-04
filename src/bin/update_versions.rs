@@ -16,11 +16,8 @@ use log::{debug, info, warn};
 use regex::Regex;
 use std::collections::HashMap;
 use std::env::var;
-use std::fs::File;
 use std::io;
-use std::io::Write;
 use std::path::Path;
-use tempfile::tempdir;
 
 const USAGE: &str = "
 update-versions - Fetch latest versions and update versions.yml on repo.
@@ -34,6 +31,7 @@ Options:
   --message=MESSAGE     the commit message to use
   --repo-name=REPO      name of the repo
   --repo-owner=OWNER    owner of the github repo
+  -f, --force           force refresh of the list
   -v, --verbose         print more output
   -d, --debug           print debug output
   --color WHEN          Coloring: auto, always, never [default: auto]
@@ -46,6 +44,7 @@ pub struct Settings {
     flag_message: Option<String>,
     flag_repo_name: Option<String>,
     flag_repo_owner: Option<String>,
+    flag_force: bool,
     flag_verbose: bool,
     flag_debug: bool,
     flag_color: ColorOption,
@@ -56,7 +55,7 @@ impl Settings {
         self.flag_token
             .clone()
             .or_else(|| var("UVM_VERSION_UPDATE_TOKEN").ok())
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, format!("No token provided")))
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "No token provided"))
     }
 
     pub fn message(&self) -> String {
@@ -70,14 +69,18 @@ impl Settings {
         self.flag_repo_name
             .clone()
             .or_else(|| var("UVM_VERSION_UPDATE_REPO_NAME").ok())
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, format!("No repo name provided")))
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "No repo name provided"))
     }
 
     pub fn repo_owner(&self) -> io::Result<String> {
         self.flag_repo_name
             .clone()
             .or_else(|| var("UVM_VERSION_UPDATE_REPO_OWNER").ok())
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, format!("No repo owner provided")))
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "No repo owner provided"))
+    }
+
+    pub fn force_update(&self) -> bool {
+        self.flag_force
     }
 }
 
@@ -312,7 +315,7 @@ fn main() -> io::Result<()> {
 
     let versions = u
         .into_versions()
-        .filter_map(|v: StreamVersion| read_version_hash(v.download_url).ok());
+        .filter_map(|v: StreamVersion| read_version_hash(&v.download_url).ok());
 
     let github = github::Github::client(token, None);
     let content = github.get_content_raw(&repo, &owner, Path::new("versions.yml"))?;
@@ -320,7 +323,7 @@ fn main() -> io::Result<()> {
     let mut remote_versions: HashMap<String, String> = serde_yaml::from_reader(content)
         .map_err(|_| io::Error::new(io::ErrorKind::Other, "Unable to parse versions"))?;
 
-    let mut has_changes = false;
+    let mut has_changes = settings.force_update();
     for version in versions {
         if remote_versions
             .insert(version.0.clone(), version.1)
@@ -367,12 +370,13 @@ fn download_stream() -> io::Result<reqwest::Response> {
 }
 
 //https://download.unity3d.com/download_unity/9758a36cfaa6/MacEditorInstaller/Unity-2017.1.5f1.pkg
-fn read_version_hash(url: String) -> io::Result<UnityRelease> {
-    let pattern = Regex::new(r"download_unity/(.*)/MacEditorInstaller/Unity-(.*).pkg").unwrap();
+fn read_version_hash(url: &str) -> io::Result<UnityRelease> {
+    let pattern = Regex::new(r"download(_unity)?/(?P<hash>.*)/MacEditorInstaller/Unity-(?P<version>.*).pkg").unwrap();
     match pattern.captures(&url) {
         Some(caps) => {
-            let hash: String = caps.get(1).map(|m| m.as_str()).unwrap().to_string();
-            let version: String = caps.get(2).map(|m| m.as_str()).unwrap().to_string();
+            let hash: String = caps.name("hash").map(|m| m.as_str()).unwrap().to_string();
+            let version: String = caps.name("version").map(|m| m.as_str()).unwrap().to_string();
+            info!("fetched version: {} with hash: {}", &version, &hash);
             Ok((version, hash))
         }
         None => Err(io::Error::new(io::ErrorKind::Other, "failed to read hash")),
