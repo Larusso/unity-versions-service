@@ -10,6 +10,9 @@ extern crate serde_json;
 extern crate serde_yaml;
 extern crate tempfile;
 
+use serde::Serialize;
+use std::collections::BTreeMap;
+use serde::Serializer;
 use cli_core::style;
 use cli_core::ColorOption;
 use log::{debug, info, warn};
@@ -18,6 +21,8 @@ use std::collections::HashMap;
 use std::env::var;
 use std::io;
 use std::path::Path;
+use std::ops::Deref;
+use std::ops::DerefMut;
 
 const USAGE: &str = "
 update-versions - Fetch latest versions and update versions.yml on repo.
@@ -295,6 +300,35 @@ impl Stream {
 
 type UnityRelease = (String, String);
 
+#[derive(Serialize, Deserialize, Default)]
+#[serde(transparent)]
+struct VersionsMap {
+    #[serde(serialize_with = "ordered_map")]
+    map: HashMap<String, String>,
+}
+
+impl Deref for VersionsMap {
+    type Target = HashMap<String, String>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.map
+    }
+}
+
+impl DerefMut for VersionsMap {
+    fn deref_mut(&mut self) -> &mut HashMap<String, String> {
+        &mut self.map
+    }
+}
+
+fn ordered_map<S>(value: &HashMap<String, String>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let ordered: BTreeMap<_, _> = value.iter().collect();
+    ordered.serialize(serializer)
+}
+
 fn main() -> io::Result<()> {
     use std::fmt::Write;
 
@@ -320,7 +354,7 @@ fn main() -> io::Result<()> {
     let github = github::Github::client(token, None);
     let content = github.get_content_raw(&repo, &owner, Path::new("versions.yml"))?;
 
-    let mut remote_versions: HashMap<String, String> = serde_yaml::from_reader(content)
+    let mut remote_versions: VersionsMap = serde_yaml::from_reader(content)
         .map_err(|_| io::Error::new(io::ErrorKind::Other, "Unable to parse versions"))?;
 
     let mut has_changes = settings.force_update();
