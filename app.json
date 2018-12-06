@@ -1,11 +1,26 @@
 {
   "name": "Unity versions service",
   "description": "A simple service to retrieve revision hash information for a unity version string",
-  "repository": "https://github.com/emk/heroku-rust-cargo-hello",
+  "repository": "https://github.com/Larusso/unity-versions-service",
   "success_url": "/",
-  "keywords": ["rust", "iron"],
-  "website": "http://www.randomhacks.net/2014/09/17/deploying-rust-heroku-iron/",
+  "keywords": ["rust", "iron", "unity", "versions"],
+  "website": "https://github.com/Larusso/unity-versions-service",
   "env": {
-    "BUILDPACK_URL": "https://github.com/emk/heroku-buildpack-rust.git"
-  }
+    "BUILDPACK_URL": "https://github.com/emk/heroku-buildpack-rust.git",
+    "UVM_VERSION_UPDATE_REPO_NAME": {
+      "description": "github repository name for update unitility",
+      "required": false
+    },
+    "UVM_VERSION_UPDATE_REPO_OWNER": {
+      "description": "github repository owner for update unitility",
+      "required": false
+    },
+    "UVM_VERSION_UPDATE_TOKEN": {
+      "description": "github token with write access to repository hosting the versions.yml",
+      "required": false
+    }
+  },
+  "addons": [
+    "scheduler"
+  ]
 }

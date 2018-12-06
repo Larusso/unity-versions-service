@@ -1305,7 +1305,7 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "unity-version-service"
+name = "unity-versions-service"
 version = "0.1.0"
 dependencies = [
  "base64 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",

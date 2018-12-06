@@ -1,5 +1,5 @@
 extern crate serde;
-extern crate unity_version_service;
+extern crate unity_versions_service;
 #[macro_use]
 extern crate serde_derive;
 extern crate cli_core;
@@ -8,11 +8,11 @@ use cli_core::{ColorOption, Options};
 use std::env;
 
 const USAGE: &str = "
-unity-version-service - A simple webserver to deliver unity version information
+unity-versions-service - A simple webserver to deliver unity version information
 
 Usage:
-  unity-version-service [options]
-  unity-version-service (-h | --help)
+  unity-versions-service [options]
+  unity-versions-service (-h | --help)
 
 Options:
   --port=PORT       the server port number
@@ -56,6 +56,6 @@ impl Options for Settings {
 
 fn main() -> std::io::Result<()> {
     let options: Settings = cli_core::get_options(USAGE)?;
-    unity_version_service::start_server(("0.0.0.0", options.port())).unwrap();
+    unity_versions_service::start_server(("0.0.0.0", options.port())).unwrap();
     Ok(())
 }

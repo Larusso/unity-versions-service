@@ -1,5 +1,5 @@
 [package]
-name = "unity-version-service"
+name = "unity-versions-service"
 version = "0.1.0"
 authors = ["Manfred Endres <manfred.endres@tslarusso.de>"]
 build = "build.rs"
@@ -10,7 +10,7 @@ keywords = ["unity","versions"]
 categories = ["development-tools"]
 license = "Apache-2.0"
 [badges]
-travis-ci = { repository = "Larusso/unity_version_service", branch = "master" }
+travis-ci = { repository = "Larusso/unity-versions-service", branch = "master" }
 maintenance = { status = "actively-developed" }
 [dependencies]
 iron = "0.6.0"
