@@ -36,6 +36,7 @@ Options:
   --message=MESSAGE     the commit message to use
   --repo-name=REPO      name of the repo
   --repo-owner=OWNER    owner of the github repo
+  --repo-branch=BRANCH  branch to push the update to
   -f, --force           force refresh of the list
   -v, --verbose         print more output
   -d, --debug           print debug output
@@ -49,6 +50,7 @@ pub struct Settings {
     flag_message: Option<String>,
     flag_repo_name: Option<String>,
     flag_repo_owner: Option<String>,
+    flag_repo_branch: Option<String>,
     flag_force: bool,
     flag_verbose: bool,
     flag_debug: bool,
@@ -82,6 +84,12 @@ impl Settings {
             .clone()
             .or_else(|| var("UVM_VERSION_UPDATE_REPO_OWNER").ok())
             .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "No repo owner provided"))
+    }
+
+    pub fn repo_branch(&self) -> Option<String> {
+        self.flag_repo_branch
+            .clone()
+            .or_else(|| var("UVM_VERSION_UPDATE_REPO_BRANCH").ok())
     }
 
     pub fn force_update(&self) -> bool {
@@ -123,6 +131,8 @@ mod github {
         message: String,
         content: String,
         sha: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        branch: Option<String>,
     }
 
     #[derive(Debug, Deserialize)]
@@ -226,6 +236,7 @@ mod github {
             &self,
             repo: &str,
             owner: &str,
+            branch: Option<String>,
             path: P,
             mut content: C,
             message: String,
@@ -251,6 +262,7 @@ mod github {
                 message,
                 content,
                 sha,
+                branch
             };
 
             let response = self
@@ -336,6 +348,7 @@ fn main() -> io::Result<()> {
     let token = settings.token()?;
     let repo = settings.repo_name()?;
     let owner = settings.repo_owner()?;
+    let branch = settings.repo_branch();
     let mut message = settings.message();
     writeln!(message, "");
 
@@ -375,6 +388,7 @@ fn main() -> io::Result<()> {
         github.put_content(
             &repo,
             &owner,
+            branch,
             Path::new("versions.yml"),
             content.as_bytes(),
             message,
