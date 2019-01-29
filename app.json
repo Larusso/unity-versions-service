@@ -18,6 +18,10 @@
     "UVM_VERSION_UPDATE_TOKEN": {
       "description": "github token with write access to repository hosting the versions.yml",
       "required": false
+    },
+    "UVM_VERSION_UPDATE_REPO_BRANCH": {
+      "description": "optional github branch to push updates to",
+      "required": false
     }
   },
   "addons": [
