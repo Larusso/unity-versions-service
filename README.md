@@ -8,7 +8,7 @@ There are two usable endpoints:
 * `/versions/${VERSION}/hash` - returns the release hash for a given version
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-[![Build Status](https://travis-ci.org/Larusso/unity-versions-service.svg?branch=master)](https://travis-ci.org/Larusso/unity-version-service)
+[![Build Status](https://travis-ci.org/Larusso/unity-versions-service.svg?branch=master)](https://travis-ci.org/Larusso/unity-versions-service)
 
 Build with cargo
 ----------------
