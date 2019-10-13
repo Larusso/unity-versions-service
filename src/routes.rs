@@ -24,9 +24,11 @@ macro_rules! versions_routes {
 }
 
 include!(concat!(env!("OUT_DIR"), "/version_routes.rs"));
+include!(concat!(env!("OUT_DIR"), "/compatible_version_routes.rs"));
 
 pub fn add_version_routes(router:&mut Router) {
-    _add_version_routes(router)
+    _add_version_routes(router);
+    _add_compatible_version_routes(router);
 }
 
 include!(concat!(env!("OUT_DIR"), "/versions.rs"));
@@ -43,3 +45,8 @@ fn versions_handler(_r: &mut Request) -> IronResult<Response> {
 pub fn add_versions_route(router:&mut Router) {
     router.get("versions/", versions_handler, "versions");
 }
+
+
+// pub fn add_compatible_version_route(router:&mut Router) {
+//     router.get("version/")
+// }
