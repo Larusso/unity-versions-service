@@ -350,7 +350,7 @@ fn main() -> io::Result<()> {
     let owner = settings.repo_owner()?;
     let branch = settings.repo_branch();
     let mut message = settings.message();
-    writeln!(message, "");
+    writeln!(message, "").unwrap();
 
     info!("update unity versions");
 
@@ -377,7 +377,7 @@ fn main() -> io::Result<()> {
             .is_none()
         {
             info!("add new version {}", &version.0);
-            writeln!(message, "* [ADD] version {}", &version.0);
+            writeln!(message, "* [ADD] version {}", &version.0).unwrap();
             has_changes = true
         }
     }

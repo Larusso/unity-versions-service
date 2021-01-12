@@ -7,8 +7,9 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use std::io;
 
-fn main() {
+fn main() -> io::Result<()> {
     let project_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let versions_path = Path::new(&project_dir).join("versions.yml");
     let versions = File::open(&versions_path).unwrap();
@@ -20,18 +21,19 @@ fn main() {
 
     let mut f = File::create(&routes_path).unwrap();
 
-    writeln!(f, "pub fn _add_version_routes(router:&mut Router) {{");
-    writeln!(f, r#"    debug!("add unity version routes");"#);
-    writeln!(f, r#"    versions_routes!(router,"#);
+    writeln!(f, "pub fn _add_version_routes(router:&mut Router) {{")?;
+    writeln!(f, r#"    debug!("add unity version routes");"#)?;
+    writeln!(f, r#"    versions_routes!(router,"#)?;
     for item in &version_list {
-        writeln!(f, r#"        "{}" => "{}","#, item.0, item.1);
+        writeln!(f, r#"        "{}" => "{}","#, item.0, item.1)?;
     }
-    writeln!(f, "    );");
-    writeln!(f, "}}");
+    writeln!(f, "    );")?;
+    writeln!(f, "}}")?;
 
     let mut f = File::create(&versions_path).unwrap();
 
-    writeln!(f, "const VERSIONS: &str = r#\"");
-    writeln!(f, "{}", serde_json::to_string_pretty(&version_list).unwrap());
-    writeln!(f, "\"#;");
+    writeln!(f, "const VERSIONS: &str = r#\"")?;
+    writeln!(f, "{}", serde_json::to_string_pretty(&version_list).unwrap())?;
+    writeln!(f, "\"#;")?;
+    Ok(())
 }
