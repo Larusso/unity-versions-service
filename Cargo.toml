@@ -14,7 +14,7 @@ travis-ci = { repository = "Larusso/unity-versions-service", branch = "master" }
 maintenance = { status = "actively-developed" }
 [dependencies]
 iron = "0.6.0"
-log = "0.4.5"
+log = "0.4.13"
 router = "0.6.0"
 serde = "1.0"
 serde_derive = "1.0"
