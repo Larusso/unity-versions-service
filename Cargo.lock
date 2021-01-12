@@ -343,9 +343,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.1.13"
+version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24f58e8c2d8e886055c3ead7b28793e1455270b5fb39650984c224bc538ba581"
+checksum = "d6ccf5ede3a895d8856620237b2f02972c1bbc78d2965ad7fe8838d4a0ed41f0"
 dependencies = [
  "bytes",
  "fnv",
