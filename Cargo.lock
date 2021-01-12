@@ -446,9 +446,9 @@ dependencies = [
 
 [[package]]
 name = "iron"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d8e17268922834707e1c29e8badbf9c712c9c43378e1b6a3388946baff10be2"
+checksum = "c6d308ca2d884650a8bf9ed2ff4cb13fbb2207b71f64cda11dc9b892067295e8"
 dependencies = [
  "hyper 0.10.15",
  "log 0.3.9",

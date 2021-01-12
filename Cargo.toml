@@ -13,7 +13,7 @@ license = "Apache-2.0"
 travis-ci = { repository = "Larusso/unity-versions-service", branch = "master" }
 maintenance = { status = "actively-developed" }
 [dependencies]
-iron = "0.6.0"
+iron = "0.6.1"
 log = "0.4.5"
 router = "0.6.0"
 serde = "1.0"
