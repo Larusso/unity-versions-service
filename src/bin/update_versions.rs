@@ -1,28 +1,16 @@
-extern crate base64;
-extern crate reqwest;
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-extern crate cli_core;
-extern crate log;
-extern crate regex;
-extern crate serde_json;
-extern crate serde_yaml;
-extern crate tempfile;
-
-use serde::Serialize;
-use std::collections::BTreeMap;
-use serde::Serializer;
 use cli_core::style;
 use cli_core::ColorOption;
 use log::{debug, info, warn};
 use regex::Regex;
+use serde::Serializer;
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env::var;
 use std::io;
-use std::path::Path;
 use std::ops::Deref;
 use std::ops::DerefMut;
+use std::path::Path;
 
 const USAGE: &str = "
 update-versions - Fetch latest versions and update versions.yml on repo.
@@ -80,7 +68,7 @@ impl Settings {
     }
 
     pub fn repo_owner(&self) -> io::Result<String> {
-        self.flag_repo_name
+        self.flag_repo_owner
             .clone()
             .or_else(|| var("UVM_VERSION_UPDATE_REPO_OWNER").ok())
             .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "No repo owner provided"))
@@ -114,6 +102,7 @@ impl cli_core::Options for Settings {
 mod github {
     use log::debug;
     use reqwest::header::{ACCEPT, USER_AGENT};
+    use serde::{Deserialize, Serialize};
     use std::io;
     use std::io::Read;
     use std::path::Path;
@@ -262,7 +251,7 @@ mod github {
                 message,
                 content,
                 sha,
-                branch
+                branch,
             };
 
             let response = self
@@ -419,11 +408,17 @@ fn download_stream() -> io::Result<reqwest::Response> {
 
 //https://download.unity3d.com/download_unity/9758a36cfaa6/MacEditorInstaller/Unity-2017.1.5f1.pkg
 fn read_version_hash(url: &str) -> io::Result<UnityRelease> {
-    let pattern = Regex::new(r"download(_unity)?/(?P<hash>.*)/MacEditorInstaller/Unity-(?P<version>.*).pkg").unwrap();
+    let pattern =
+        Regex::new(r"download(_unity)?/(?P<hash>.*)/MacEditorInstaller/Unity-(?P<version>.*).pkg")
+            .unwrap();
     match pattern.captures(&url) {
         Some(caps) => {
             let hash: String = caps.name("hash").map(|m| m.as_str()).unwrap().to_string();
-            let version: String = caps.name("version").map(|m| m.as_str()).unwrap().to_string();
+            let version: String = caps
+                .name("version")
+                .map(|m| m.as_str())
+                .unwrap()
+                .to_string();
             info!("fetched version: {} with hash: {}", &version, &hash);
             Ok((version, hash))
         }

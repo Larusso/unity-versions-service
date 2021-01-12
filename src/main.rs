@@ -1,10 +1,5 @@
-extern crate serde;
-extern crate unity_versions_service;
-#[macro_use]
-extern crate serde_derive;
-extern crate cli_core;
-
 use cli_core::{ColorOption, Options};
+use serde::Deserialize;
 use std::env;
 
 const USAGE: &str = "
