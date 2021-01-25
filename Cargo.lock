@@ -81,6 +81,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "base64"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
+
+[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1829,7 +1835,7 @@ checksum = "f7fe0bb3479651439c9112f72b6c505038574c9fbb575ed1bf3b797fa39dd564"
 name = "unity-versions-service"
 version = "0.1.0"
 dependencies = [
- "base64 0.10.1",
+ "base64 0.13.0",
  "cli_core",
  "iron",
  "log 0.4.13",
