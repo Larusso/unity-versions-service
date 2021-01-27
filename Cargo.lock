@@ -229,7 +229,7 @@ dependencies = [
  "cookie",
  "failure",
  "idna 0.1.5",
- "log 0.4.13",
+ "log 0.4.14",
  "publicsuffix",
  "serde",
  "serde_json",
@@ -401,7 +401,7 @@ checksum = "7992096ba2290bd35b86b282e72edae518a25aa9a067ff417bc017ae63ac5e22"
 dependencies = [
  "chrono",
  "glob",
- "log 0.4.13",
+ "log 0.4.14",
  "regex",
 ]
 
@@ -509,7 +509,7 @@ dependencies = [
  "futures",
  "http",
  "indexmap",
- "log 0.4.13",
+ "log 0.4.14",
  "slab",
  "string",
  "tokio-io",
@@ -593,7 +593,7 @@ dependencies = [
  "httparse",
  "iovec",
  "itoa",
- "log 0.4.13",
+ "log 0.4.14",
  "net2",
  "rustc_version",
  "time 0.1.44",
@@ -757,16 +757,16 @@ version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 dependencies = [
- "log 0.4.13",
+ "log 0.4.14",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.13"
+version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcf3805d4480bb5b86070dcfeb9e2cb2ebc148adb753c5cca5f884d1d65a42b2"
+checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
 dependencies = [
- "cfg-if 0.1.10",
+ "cfg-if 1.0.0",
 ]
 
 [[package]]
@@ -855,7 +855,7 @@ dependencies = [
  "iovec",
  "kernel32-sys",
  "libc",
- "log 0.4.13",
+ "log 0.4.14",
  "miow",
  "net2",
  "slab",
@@ -888,7 +888,7 @@ checksum = "b8d96b2e1c8da3957d58100b09f102c6d9cfdfced01b7ec5a8974044bb09dbd4"
 dependencies = [
  "lazy_static 1.4.0",
  "libc",
- "log 0.4.13",
+ "log 0.4.14",
  "openssl",
  "openssl-probe",
  "openssl-sys",
@@ -1350,7 +1350,7 @@ dependencies = [
  "http",
  "hyper 0.12.35",
  "hyper-tls",
- "log 0.4.13",
+ "log 0.4.14",
  "mime 0.3.16",
  "mime_guess 2.0.3",
  "native-tls",
@@ -1804,7 +1804,7 @@ checksum = "57fc868aae093479e3131e3d165c93b1c7474109d13c90ec0dda2a1bbfff0674"
 dependencies = [
  "bytes",
  "futures",
- "log 0.4.13",
+ "log 0.4.14",
 ]
 
 [[package]]
@@ -1816,7 +1816,7 @@ dependencies = [
  "crossbeam-utils",
  "futures",
  "lazy_static 1.4.0",
- "log 0.4.13",
+ "log 0.4.14",
  "mio",
  "num_cpus",
  "parking_lot 0.9.0",
@@ -1861,7 +1861,7 @@ dependencies = [
  "crossbeam-utils",
  "futures",
  "lazy_static 1.4.0",
- "log 0.4.13",
+ "log 0.4.14",
  "num_cpus",
  "slab",
  "tokio-executor",
@@ -1970,7 +1970,7 @@ dependencies = [
  "base64 0.13.0",
  "cli_core",
  "iron",
- "log 0.4.13",
+ "log 0.4.14",
  "regex",
  "reqwest",
  "router",
@@ -2047,7 +2047,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6395efa4784b027708f7451087e647ec73cc74f5d9bc2e418404248d679a230"
 dependencies = [
  "futures",
- "log 0.4.13",
+ "log 0.4.14",
  "try-lock",
 ]
 
@@ -2075,7 +2075,7 @@ checksum = "1114f89ab1f4106e5b55e688b828c0ab0ea593a1ea7c094b141b14cbaaec2d62"
 dependencies = [
  "bumpalo",
  "lazy_static 1.4.0",
- "log 0.4.13",
+ "log 0.4.14",
  "proc-macro2",
  "quote",
  "syn",
