@@ -1,9 +1,13 @@
 use cli_core::style;
 use cli_core::ColorOption;
-use log::{debug, info, warn};
-use regex::Regex;
+use log::{info, warn};
+use rayon::prelude::*;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
+use uvm_core::Version;
+use uvm_live_platform::ListVersions;
+use uvm_live_platform::UnityReleaseDownloadArchitecture;
+use uvm_live_platform::UnityReleaseStream;
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::env::var;
@@ -11,6 +15,7 @@ use std::io;
 use std::ops::Deref;
 use std::ops::DerefMut;
 use std::path::Path;
+use std::str::FromStr;
 
 const USAGE: &str = "
 update-versions - Fetch latest versions and update versions.yml on repo.
@@ -343,15 +348,41 @@ fn main() -> io::Result<()> {
 
     info!("update unity versions");
 
-    let version_stream = download_stream()?;
-    let u: Stream = serde_json::from_reader(version_stream)?;
+    let streams = vec![
+        UnityReleaseStream::Alpha,
+        UnityReleaseStream::Beta,
+        UnityReleaseStream::Lts,
+        UnityReleaseStream::Tech,
+    ];
 
-    debug!("{:?}", u.official);
-    debug!("{:?}", u.beta);
-
-    let versions = u
-        .into_versions()
-        .filter_map(|v: StreamVersion| read_version_hash(&v.download_url).ok());
+    let versions = streams
+        .par_iter()
+        .map(|stream| {
+            ListVersions::builder()
+                .architecture(UnityReleaseDownloadArchitecture::X86_64)
+                .autopage(true)
+                .include_revision(true)
+                .stream(stream.to_owned())
+                .list()
+        })
+        .filter_map(|v| v.ok())
+        .fold(
+            || {
+                let v: Vec<String> = vec![];
+                v
+            },
+            |mut a, b| {
+                let mut b_vec: Vec<String> = b.collect();
+                a.append(&mut b_vec);
+                a
+            },
+        )
+        .flatten_iter()
+        .filter_map(|v| Version::from_str(&v).ok())
+        .map(|v| {
+            let hash = v.version_hash().expect("expect revision hash to be included").to_owned();
+            (v, hash)
+        }).collect::<Vec<(Version, String)>>();
 
     let github = github::Github::client(token, None);
     let content = github.get_content_raw(&repo, &owner, Path::new("versions.yml"))?;
@@ -362,7 +393,7 @@ fn main() -> io::Result<()> {
     let mut has_changes = settings.force_update();
     for version in versions {
         if remote_versions
-            .insert(version.0.clone(), version.1)
+            .insert(version.0.to_string(), version.1)
             .is_none()
         {
             info!("add new version {}", &version.0);
@@ -388,40 +419,4 @@ fn main() -> io::Result<()> {
 
     println!("{}", style("Finish").green());
     Ok(())
-}
-
-fn download_stream() -> io::Result<reqwest::Response> {
-    let response = reqwest::get(UPDATE_STREAM)
-        .map_err(|_| io::Error::new(io::ErrorKind::Other, "Unable to download stream json"))?;
-    let status = response.status();
-    if status.is_client_error() || status.is_server_error() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            format!(
-                "Download failed for {} with status {}",
-                UPDATE_STREAM, status
-            ),
-        ));
-    }
-    Ok(response)
-}
-
-//https://download.unity3d.com/download_unity/9758a36cfaa6/MacEditorInstaller/Unity-2017.1.5f1.pkg
-fn read_version_hash(url: &str) -> io::Result<UnityRelease> {
-    let pattern =
-        Regex::new(r"download(_unity)?/(?P<hash>.*)/MacEditorInstaller/Unity-(?P<version>.*).pkg")
-            .unwrap();
-    match pattern.captures(&url) {
-        Some(caps) => {
-            let hash: String = caps.name("hash").map(|m| m.as_str()).unwrap().to_string();
-            let version: String = caps
-                .name("version")
-                .map(|m| m.as_str())
-                .unwrap()
-                .to_string();
-            info!("fetched version: {} with hash: {}", &version, &hash);
-            Ok((version, hash))
-        }
-        None => Err(io::Error::new(io::ErrorKind::Other, "failed to read hash")),
-    }
 }

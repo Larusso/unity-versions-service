@@ -26,6 +26,9 @@ reqwest = "0.9.4"
 tempfile = "3"
 regex = "1.4"
 base64 = "0.13.0"
+uvm_live_platform = "0.1.0"
+uvm_core = "0.13.2"
+rayon = "1.7.0"
 [build-dependencies]
 serde = { version = "1.0.127", features = ["derive"] }
 serde_yaml = "0.8.17"
