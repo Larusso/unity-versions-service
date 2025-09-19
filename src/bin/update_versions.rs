@@ -4,7 +4,8 @@ use log::{info, warn};
 use rayon::prelude::*;
 use serde::Serializer;
 use serde::{Deserialize, Serialize};
-use uvm_core::Version;
+use unity_version::CompleteVersion;
+use unity_version::Version;
 use uvm_live_platform::ListVersions;
 use uvm_live_platform::UnityReleaseDownloadArchitecture;
 use uvm_live_platform::UnityReleaseStream;
@@ -359,10 +360,11 @@ fn main() -> io::Result<()> {
         .par_iter()
         .map(|stream| {
             ListVersions::builder()
-                .architecture(UnityReleaseDownloadArchitecture::X86_64)
+                .with_architecture(UnityReleaseDownloadArchitecture::X86_64)
                 .autopage(true)
                 .include_revision(true)
-                .stream(stream.to_owned())
+                .with_extended_lts()
+                .with_stream(stream.to_owned())
                 .list()
         })
         .filter_map(|v| v.ok())
@@ -378,10 +380,10 @@ fn main() -> io::Result<()> {
             },
         )
         .flatten_iter()
-        .filter_map(|v| Version::from_str(&v).ok())
+        .filter_map(|v| CompleteVersion::from_str(&v).ok())
         .map(|v| {
-            let hash = v.version_hash().expect("expect revision hash to be included").to_owned();
-            (v, hash)
+            let hash = v.revision().to_string().to_owned();
+            (v.version().to_owned(), hash)
         }).collect::<Vec<(Version, String)>>();
 
     let github = github::Github::client(token, None);
